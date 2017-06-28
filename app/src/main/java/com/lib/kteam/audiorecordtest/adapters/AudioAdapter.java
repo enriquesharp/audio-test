@@ -2,6 +2,7 @@ package com.lib.kteam.audiorecordtest.adapters;
 
 import android.os.Handler;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,19 +24,19 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     private final Handler handler = new Handler();
     private ArrayList<AudioModel> audioModelArrayList = new ArrayList<>();
-    private AudioModel longPressedModel = null;
+    private AudioModel audioModelSelected = null;
     private AudioListener audioListener = null;
     private Runnable longPress = new Runnable() {
         public void run() {
             if (audioListener != null)
-                audioListener.onAudioLongPressed(longPressedModel);
+                audioListener.onAudioLongPressed(audioModelSelected);
         }
     };
 
     public void setData(ArrayList<AudioModel> audioModels, AudioListener listener) {
         this.audioListener = listener;
-        longPressedModel = null;
-        if (audioModels != null){
+        audioModelSelected = null;
+        if (audioModels != null) {
             this.audioModelArrayList = audioModels;
             notifyDataSetChanged();
         }
@@ -53,6 +54,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
         holder.audioDir.setText(model.getFileName().split("[.]")[0]);
 
+        holder.lineDivider.setVisibility(holder.getAdapterPosition() == audioModelArrayList.size() - 1 ? View.INVISIBLE : View.VISIBLE);
+
         setItemViewTouchInteraction(holder);
     }
 
@@ -62,29 +65,36 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
     }
 
     private void setItemViewTouchInteraction(final AudioAdapterHolder holder) {
-        holder.itemBox.setOnTouchListener(new View.OnTouchListener() {
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                audioModelSelected = audioModelArrayList.get(holder.getAdapterPosition());
+
+                if (audioListener != null)
+                    audioListener.onAudioLongPressed(audioModelSelected);
+
+//                holder.cardView.setCardBackgroundColor(AudioApp.getInstance().getResources().getColor(R.color.lightest_gray_color));
+//                handler.postDelayed(longPress, 1000);
+                return true;
+            }
+        });
+        holder.cardView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
 
                 switch (action) {
-                    case (MotionEvent.ACTION_DOWN): {
-                        longPressedModel = audioModelArrayList.get(holder.getAdapterPosition());
-                        handler.postDelayed(longPress, 1000);
-                    }
-                    break;
                     case (MotionEvent.ACTION_UP): {
-                        longPressedModel = null;
+                        audioModelSelected = audioModelArrayList.get(holder.getAdapterPosition());
+//                        holder.cardView.setCardBackgroundColor(AudioApp.getInstance().getResources().getColor(android.R.color.white));
+                        if (audioListener != null)
+                            audioListener.onAudioStopPressed(audioModelSelected);
                         handler.removeCallbacks(longPress);
-                    }
-                    break;
-                    case (MotionEvent.ACTION_MOVE): {
-
                     }
                     break;
                 }
 
-                return true;
+                return false;
             }
         });
     }
@@ -93,11 +103,15 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
         View itemBox;
         AppCompatTextView audioDir;
+        View lineDivider;
+        CardView cardView;
 
         AudioAdapterHolder(View itemView) {
             super(itemView);
             itemBox = itemView.findViewById(R.id.item_box);
             audioDir = (AppCompatTextView) itemView.findViewById(R.id.audio_dir_tv);
+            lineDivider = itemView.findViewById(R.id.line_divider);
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
         }
     }
 }

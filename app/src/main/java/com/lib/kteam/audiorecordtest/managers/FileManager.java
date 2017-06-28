@@ -14,10 +14,6 @@ import java.util.ArrayList;
 
 public class FileManager {
 
-    public static File createFile(String file) {
-        return null;
-    }
-
     public static ArrayList<AudioModel> getAudioFiles() {
         String baseDir = AudioApp.getInstance().getAudioFilesBaseDir();
         ArrayList<AudioModel> availableFileList = new ArrayList<>();
@@ -25,25 +21,11 @@ public class FileManager {
         String[] fileList = rootFile.list();
         if (rootFile.exists() && fileList != null && fileList.length > 0) {
             for (String fName : fileList) {
-                File f = new File(fName);
-                String mimeType = getMimeType(f.getAbsolutePath());
-                if (mimeType != null && mimeType.startsWith("audio")) {
-                    AudioModel model = new AudioModel();
-                    model.setFileName(f.getName());
-                    availableFileList.add(model);
-                }
+                AudioModel model = new AudioModel();
+                model.setFileName(fName);
+                availableFileList.add(model);
             }
         }
         return availableFileList;
-    }
-
-
-    public static String getMimeType(String filePath) {
-        String mimeType = null;
-        String ext = MimeTypeMap.getFileExtensionFromUrl(filePath);
-
-        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-
-        return mimeType;
     }
 }

@@ -4,11 +4,12 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
-    <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/audio_file_name_tv"
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/help_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:text="@string/help_text"
         android:textColor="@android:color/black"
         android:textSize="16sp" />
 </RelativeLayout>

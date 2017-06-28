@@ -1,16 +1,21 @@
 package com.lib.kteam.audiorecordtest.activities;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +30,7 @@ import com.lib.kteam.audiorecordtest.interfaces.AudioListener;
 import com.lib.kteam.audiorecordtest.managers.FileManager;
 import com.lib.kteam.audiorecordtest.models.AudioModel;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AudioListener {
@@ -42,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -118,20 +125,16 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_help) {
+            launchHelpDialog();
             return true;
         }
 
@@ -158,8 +161,15 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
 
     void playAudio(AudioModel audioModel) {
         try {
+            stopAudio(audioModel);
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(AudioApp.getInstance().getAudioFilesBaseDir() + audioModel.getFileName());
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+
+                }
+            });
+            mediaPlayer.setDataSource(new File(AudioApp.getInstance().getAudioFilesBaseDir(), audioModel.getFileName()).getAbsolutePath());
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (Exception e) {
@@ -177,5 +187,21 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    void launchHelpDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View rootView = getLayoutInflater().inflate(R.layout.dialog_help_layout, null);
+        builder.setView(rootView)
+                .setTitle(getResources().getString(R.string.help_title))
+                .setCancelable(false)
+                .setPositiveButton(getResources().getString(R.string.ok_text), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+        builder.create();
+        builder.show();
     }
 }
