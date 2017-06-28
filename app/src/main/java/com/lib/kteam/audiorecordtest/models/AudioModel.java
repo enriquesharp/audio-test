@@ -8,8 +8,7 @@ import java.util.Date;
 
 public class AudioModel {
 
-    String fileName = "";
-    Date createdDate = null;
+    private String fileName = "";
 
 
     public String getFileName() {
@@ -20,11 +19,4 @@ public class AudioModel {
         this.fileName = fileName;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
 }
