@@ -77,13 +77,19 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
 
     void checkOrRequestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            String[] per = new String[2];
+            ArrayList<String> permission = new ArrayList<>();
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                per[0] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-                per[1] = Manifest.permission.RECORD_AUDIO;
+                permission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            if (per.length > 0) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+                permission.add(Manifest.permission.RECORD_AUDIO);
+
+            if (permission.size() > 0) {
+                String[] per = new String[permission.size()];
+
+                for(int i = 0; i < permission.size(); i++){
+                    per[i] = permission.get(i);
+                }
 
                 if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
                         ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.RECORD_AUDIO)) {
