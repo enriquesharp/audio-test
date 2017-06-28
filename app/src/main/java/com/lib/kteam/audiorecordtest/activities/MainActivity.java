@@ -7,14 +7,12 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
 
     RecyclerView audioRv;
     AudioAdapter audioAdapter;
+    AppCompatTextView emptyListTv;
 
     MediaPlayer mediaPlayer;
 
@@ -53,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         audioRv = (RecyclerView) findViewById(R.id.audio_rv);
+
+        emptyListTv = (AppCompatTextView) findViewById(R.id.empty_list_tv);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -120,7 +121,15 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
 
     private void setAudioList() {
         ArrayList<AudioModel> audioFiles = FileManager.getAudioFiles();
-        audioAdapter.setData(audioFiles, this);
+
+        if (audioFiles != null && audioFiles.size() > 0) {
+            audioAdapter.setData(audioFiles, this);
+            audioRv.setVisibility(View.VISIBLE);
+            emptyListTv.setVisibility(View.GONE);
+        } else {
+            audioRv.setVisibility(View.GONE);
+            emptyListTv.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -189,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements AudioListener {
         }
     }
 
-    void launchHelpDialog(){
+    void launchHelpDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View rootView = getLayoutInflater().inflate(R.layout.dialog_help_layout, null);
         builder.setView(rootView)

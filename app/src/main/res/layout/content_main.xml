@@ -9,6 +9,17 @@
     tools:context="com.lib.kteam.audiorecordtest.activities.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/empty_list_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="30dp"
+        android:gravity="center_horizontal"
+        android:text="@string/empty_list_text"
+        android:textSize="18sp"
+        android:textColor="@color/black_transparent"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/audio_rv"
         android:layout_width="match_parent"

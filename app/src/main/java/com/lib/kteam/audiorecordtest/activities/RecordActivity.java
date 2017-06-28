@@ -29,7 +29,7 @@ import java.util.UUID;
 
 public class RecordActivity extends AppCompatActivity implements View.OnClickListener {
 
-    final static String AUDIO_PREFIX_NAME = "Audio recorded ";
+    public final static String AUDIO_PREFIX_NAME = "Audio_recorded";
     View startRecordBox;
     View stopRecordBox;
     AppCompatImageView startIcon;
@@ -76,7 +76,6 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             startRecord();
         } else if (viewId == stopRecordBox.getId()) {
             stopRecord();
-            setAudioFileName();
         }
     }
 
@@ -126,10 +125,11 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(audioOutputFile.getAbsolutePath());
+        recordingTime.setBase(SystemClock.elapsedRealtime());
     }
 
     private String generateAudioName(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-MM-ss", Locale.getDefault());
         return AUDIO_PREFIX_NAME.concat(dateFormat.format(new Date()));
     }
 
@@ -138,32 +138,12 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             mediaRecorder.stop();
             mediaRecorder.release();
             mediaRecorder = null;
-            Toast.makeText(getApplicationContext(), "Stopped...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Stopped...Audio file created with name: " + audioOutputFile.getName(), Toast.LENGTH_SHORT).show();
             updateVisualState(RECORD_STATE.STOPPED);
+            recordingTime.setBase(SystemClock.elapsedRealtime());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    void setAudioFileName() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View rootView = getLayoutInflater().inflate(R.layout.dialog_audio_name_layout, null);
-        final AppCompatEditText audioFileNameTv = ((AppCompatEditText) rootView.findViewById(R.id.audio_file_name_tv));
-        audioFileNameTv.setText(audioOutputFile.getName().split("[.]")[0]);
-        builder.setView(rootView)
-                .setTitle(getResources().getString(R.string.set_file_name))
-                .setCancelable(false)
-                .setPositiveButton(getResources().getString(R.string.ok_text), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        audioOutputFile.renameTo(new File(AudioApp.getInstance().getAudioFilesBaseDir(), audioFileNameTv.getText() + ".3gpp"));
-                        recordingTime.setBase(SystemClock.elapsedRealtime());
-                    }
-                });
-
-        builder.create();
-        builder.show();
-    }
-
     private enum RECORD_STATE {RECORDING, STOPPED}
 }

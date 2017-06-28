@@ -15,6 +15,7 @@ import com.lib.kteam.audiorecordtest.interfaces.AudioListener;
 import com.lib.kteam.audiorecordtest.models.AudioModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Enrique on 6/26/2017.
@@ -36,7 +37,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
     public void setData(ArrayList<AudioModel> audioModels, AudioListener listener) {
         this.audioListener = listener;
         audioModelSelected = null;
-        if (audioModels != null) {
+        if (audioModels != null && audioModels.size() > 0) {
+            Collections.reverse(audioModels);
             this.audioModelArrayList = audioModels;
             notifyDataSetChanged();
         }
